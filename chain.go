@@ -214,6 +214,115 @@ func (c *Client) GetBlockCount() (int64, error) {
 	return c.GetBlockCountAsync().Receive()
 }
 
+// FutureGetCFilterResult is a future promise to deliver the result of a
+// GetCFilterAsync RPC invocation (or an applicable error).
+type FutureGetCFilterResult chan *response
+
+// Receive waits for the response promised by the future and returns the raw
+// filter requested from the server given its block hash.
+func (r FutureGetCFilterResult) Receive() (*wire.MsgCFilter, error) {
+	res, err := receiveFuture(r)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal result as a string.
+	var filterHex string
+	err = json.Unmarshal(res, &filterHex)
+	if err != nil {
+		return nil, err
+	}
+
+	// Decode the serialized cf hex to raw bytes.
+	serializedFilter, err := hex.DecodeString(filterHex)
+	if err != nil {
+		return nil, err
+	}
+
+	// Deserialize the filter and return it.
+	var msgCFilter wire.MsgCFilter
+	err = msgCFilter.Deserialize(bytes.NewReader(serializedFilter))
+	if err != nil {
+		return nil, err
+	}
+	return &msgCFilter, nil
+}
+
+// GetCFilterAsync returns an instance of a type that can be used to get the
+// result of the RPC at some future time by invoking the Receive function on the
+// returned instance.
+//
+// See GetCFilter for the blocking version and more details.
+func (c *Client) GetCFilterAsync(blockHash *chainhash.Hash) FutureGetCFilterResult {
+	hash := ""
+	if blockHash != nil {
+		hash = blockHash.String()
+	}
+
+	cmd := btcjson.NewGetCFilterCmd(hash, false)
+	return c.sendCmd(cmd)
+}
+
+// GetCFilter returns a raw filter from the server given its block hash.
+func (c *Client) GetCFilter(blockHash *chainhash.Hash) (*wire.MsgCFilter, error) {
+	return c.GetCFilterAsync(blockHash).Receive()
+}
+
+// FutureGetCFilterHeaderResult is a future promise to deliver the result of a
+// GetCFilterHeaderAsync RPC invocation (or an applicable error).
+type FutureGetCFilterHeaderResult chan *response
+
+// Receive waits for the response promised by the future and returns the raw
+// filter header requested from the server given its block hash.
+func (r FutureGetCFilterHeaderResult) Receive() (*wire.MsgCFilterHeader, error) {
+	res, err := receiveFuture(r)
+	if err != nil {
+		return nil, err
+	}
+
+	// Unmarshal result as a string.
+	var headerHex string
+	err = json.Unmarshal(res, &headerHex)
+	if err != nil {
+		return nil, err
+	}
+
+	// Decode the serialized header hex to raw bytes.
+	serializedHeader, err := hex.DecodeString(headerHex)
+	if err != nil {
+		return nil, err
+	}
+
+	// Deserialize the header and return it.
+	var msgCFilterHeader wire.MsgCFilterHeader
+	err = msgCFilterHeader.Deserialize(bytes.NewReader(serializedHeader))
+	if err != nil {
+		return nil, err
+	}
+	return &msgCFilterHeader, nil
+}
+
+// GetCFilterHeaderAsync returns an instance of a type that can be used to get
+// the result of the RPC at some future time by invoking the Receive function
+// on the returned instance.
+//
+// See GetCFilterHeader for the blocking version and more details.
+func (c *Client) GetCFilterHeaderAsync(blockHash *chainhash.Hash) FutureGetCFilterHeaderResult {
+	hash := ""
+	if blockHash != nil {
+		hash = blockHash.String()
+	}
+
+	cmd := btcjson.NewGetCFilterHeaderCmd(hash, false)
+	return c.sendCmd(cmd)
+}
+
+// GetCFilterHeader returns a raw filter header from the server given its block
+// hash.
+func (c *Client) GetCFilterHeader(blockHash *chainhash.Hash) (*wire.MsgCFilterHeader, error) {
+	return c.GetCFilterHeaderAsync(blockHash).Receive()
+}
+
 // FutureGetDifficultyResult is a future promise to deliver the result of a
 // GetDifficultyAsync RPC invocation (or an applicable error).
 type FutureGetDifficultyResult chan *response
