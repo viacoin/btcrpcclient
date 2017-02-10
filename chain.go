@@ -253,19 +253,19 @@ func (r FutureGetCFilterResult) Receive() (*wire.MsgCFilter, error) {
 // returned instance.
 //
 // See GetCFilter for the blocking version and more details.
-func (c *Client) GetCFilterAsync(blockHash *chainhash.Hash) FutureGetCFilterResult {
+func (c *Client) GetCFilterAsync(blockHash *chainhash.Hash, extended bool) FutureGetCFilterResult {
 	hash := ""
 	if blockHash != nil {
 		hash = blockHash.String()
 	}
 
-	cmd := btcjson.NewGetCFilterCmd(hash, false)
+	cmd := btcjson.NewGetCFilterCmd(hash, extended)
 	return c.sendCmd(cmd)
 }
 
 // GetCFilter returns a raw filter from the server given its block hash.
-func (c *Client) GetCFilter(blockHash *chainhash.Hash) (*wire.MsgCFilter, error) {
-	return c.GetCFilterAsync(blockHash).Receive()
+func (c *Client) GetCFilter(blockHash *chainhash.Hash, extended bool) (*wire.MsgCFilter, error) {
+	return c.GetCFilterAsync(blockHash, extended).Receive()
 }
 
 // FutureGetCFilterHeaderResult is a future promise to deliver the result of a
@@ -307,20 +307,20 @@ func (r FutureGetCFilterHeaderResult) Receive() (*wire.MsgCFilterHeader, error) 
 // on the returned instance.
 //
 // See GetCFilterHeader for the blocking version and more details.
-func (c *Client) GetCFilterHeaderAsync(blockHash *chainhash.Hash) FutureGetCFilterHeaderResult {
+func (c *Client) GetCFilterHeaderAsync(blockHash *chainhash.Hash, extended bool) FutureGetCFilterHeaderResult {
 	hash := ""
 	if blockHash != nil {
 		hash = blockHash.String()
 	}
 
-	cmd := btcjson.NewGetCFilterHeaderCmd(hash, false)
+	cmd := btcjson.NewGetCFilterHeaderCmd(hash, extended)
 	return c.sendCmd(cmd)
 }
 
 // GetCFilterHeader returns a raw filter header from the server given its block
 // hash.
-func (c *Client) GetCFilterHeader(blockHash *chainhash.Hash) (*wire.MsgCFilterHeader, error) {
-	return c.GetCFilterHeaderAsync(blockHash).Receive()
+func (c *Client) GetCFilterHeader(blockHash *chainhash.Hash, extended bool) (*wire.MsgCFilterHeader, error) {
+	return c.GetCFilterHeaderAsync(blockHash, extended).Receive()
 }
 
 // FutureGetDifficultyResult is a future promise to deliver the result of a
