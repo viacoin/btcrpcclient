@@ -274,7 +274,7 @@ type FutureGetCFilterHeaderResult chan *response
 
 // Receive waits for the response promised by the future and returns the raw
 // filter header requested from the server given its block hash.
-func (r FutureGetCFilterHeaderResult) Receive() (*wire.MsgCFilterHeader, error) {
+func (r FutureGetCFilterHeaderResult) Receive() (*wire.MsgCFHeaders, error) {
 	res, err := receiveFuture(r)
 	if err != nil {
 		return nil, err
@@ -287,19 +287,19 @@ func (r FutureGetCFilterHeaderResult) Receive() (*wire.MsgCFilterHeader, error) 
 		return nil, err
 	}
 
-	// Decode the serialized header hex to raw bytes.
-	serializedHeader, err := hex.DecodeString(headerHex)
+	// Assign the decoded header into a hash
+	headerHash, err := chainhash.NewHashFromStr(headerHex)
 	if err != nil {
 		return nil, err
 	}
 
-	// Deserialize the header and return it.
-	var msgCFilterHeader wire.MsgCFilterHeader
-	err = msgCFilterHeader.Deserialize(bytes.NewReader(serializedHeader))
+	// Assign the hash to a headers message and return it.
+	var msgCFHeaders wire.MsgCFHeaders
+	err = msgCFHeaders.AddCFHeader(headerHash)
 	if err != nil {
 		return nil, err
 	}
-	return &msgCFilterHeader, nil
+	return &msgCFHeaders, nil
 }
 
 // GetCFilterHeaderAsync returns an instance of a type that can be used to get
@@ -319,7 +319,7 @@ func (c *Client) GetCFilterHeaderAsync(blockHash *chainhash.Hash, extended bool)
 
 // GetCFilterHeader returns a raw filter header from the server given its block
 // hash.
-func (c *Client) GetCFilterHeader(blockHash *chainhash.Hash, extended bool) (*wire.MsgCFilterHeader, error) {
+func (c *Client) GetCFilterHeader(blockHash *chainhash.Hash, extended bool) (*wire.MsgCFHeaders, error) {
 	return c.GetCFilterHeaderAsync(blockHash, extended).Receive()
 }
 
