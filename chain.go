@@ -239,12 +239,11 @@ func (r FutureGetCFilterResult) Receive() (*wire.MsgCFilter, error) {
 		return nil, err
 	}
 
-	// Deserialize the filter and return it.
+	// Assign the filter bytes to the correct field of the wire message.
+	// We aren't going to set the block hash or extended flag, since we
+	// don't actually get that back in the RPC response.
 	var msgCFilter wire.MsgCFilter
-	err = msgCFilter.Deserialize(bytes.NewReader(serializedFilter))
-	if err != nil {
-		return nil, err
-	}
+	msgCFilter.Data = serializedFilter
 	return &msgCFilter, nil
 }
 
