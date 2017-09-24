@@ -1,4 +1,4 @@
-btcrpcclient
+viarpcclient
 ============
 
 [![Build Status](https://travis-ci.org/roasbeef/btcrpcclient.png?branch=master)]
@@ -6,9 +6,9 @@ btcrpcclient
 [![GoDoc](https://godoc.org/github.com/roasbeef/btcrpcclient?status.png)]
 (http://godoc.org/github.com/roasbeef/btcrpcclient)
 
-btcrpcclient implements a Websocket-enabled Bitcoin JSON-RPC client package
+viarpcclient implements a Websocket-enabled Viacoin JSON-RPC client package
 written in [Go](http://golang.org/).  It provides a robust and easy to use
-client for interfacing with a Bitcoin RPC server that uses a btcd/bitcoin core
+client for interfacing with a Bitcoin RPC server that uses a viad/viacoin core
 compatible Bitcoin JSON-RPC API.
 
 ## Status
@@ -48,7 +48,7 @@ implement and the API is not stable yet.
 ## Installation
 
 ```bash
-$ go get -u github.com/roasbeef/btcrpcclient
+$ go get -u github.com/viacoin/viarpcclient
 ```
 
 ## License
